@@ -187,8 +187,68 @@
       background: linear-gradient(to bottom, var(--gold), transparent);
       animation: scrollPulse 2s 2s infinite;
     }
+/* CONTATTI */
+.contatti {
+  padding: 6rem 4rem;
+  text-align: center;
+  border-top: 1px solid #1e1e1e;
+}
 
-    /* FILTER BAR */
+.contatti-tag {
+  font-size: 0.75rem;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 1.5rem;
+  display: block;
+}
+
+.contatti h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 300;
+  margin-bottom: 1rem;
+}
+
+.contatti h2 em {
+  font-style: italic;
+  color: var(--gold-light);
+}
+
+.contatti-sub {
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+  color: var(--grey-light);
+  margin-bottom: 3.5rem;
+}
+
+.contatti-links {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.contatti-link {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1.1rem 2.5rem;
+  border: 1px solid var(--grey);
+  color: var(--white);
+  text-decoration: none;
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  transition: border-color 0.3s, color 0.3s, background 0.3s;
+}
+
+.contatti-link:hover {
+  border-color: var(--gold);
+  color: var(--gold-light);
+  background: rgba(184,154,106,0.05);
+}
+      /* FILTER BAR */
     .filter-section {
       padding: 5rem 4rem 2rem;
     }
