@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Portfolio Fotografico</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Montserrat:wght@200;400;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0a;
+      --bg2: #111111;
+      --gold: #b89a6a;
+      --gold-light: #d4b896;
+      --white: #f0ece4;
+      --grey: #444;
+      --grey-light: #888;
+      --radius: 2px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--white);
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 200;
+      cursor: none;
+      overflow-x: hidden;
+    }
+
+    /* CUSTOM CURSOR */
+    .cursor {
+      position: fixed;
+      width: 10px; height: 10px;
+      background: var(--gold);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s, width 0.3s, height 0.3s, background 0.3s;
+    }
+    .cursor-ring {
+      position: fixed;
+      width: 36px; height: 36px;
+      border: 1px solid var(--gold);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: transform 0.15s ease-out, width 0.3s, height 0.3s, opacity 0.3s;
+      opacity: 0.6;
+    }
+    .cursor.hover { width: 16px; height: 16px; background: var(--gold-light); }
+    .cursor-ring.hover { width: 56px; height: 56px; opacity: 0.3; }
+
+    /* HEADER */
+    header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 2rem 4rem;
+      background: linear-gradient(to bottom, rgba(10,10,10,0.95), transparent);
+    }
+
+    .logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
+      font-weight: 300;
+      letter-spacing: 0.15em;
+      color: var(--white);
+      text-decoration: none;
+    }
+    .logo span { color: var(--gold); font-style: italic; }
+
+    nav { display: flex; gap: 2.5rem; }
+    nav a {
+      font-size: 0.65rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--grey-light);
+      text-decoration: none;
+      transition: color 0.3s;
+      position: relative;
+    }
+    nav a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; left: 0;
+      width: 0; height: 1px;
+      background: var(--gold);
+      transition: width 0.3s;
+    }
+    nav a:hover { color: var(--gold-light); }
+    nav a:hover::after { width: 100%; }
+
+    /* HERO */
+    .hero {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 6rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 70% 40%, rgba(184,154,106,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse at 20% 80%, rgba(184,154,106,0.04) 0%, transparent 50%);
+    }
+
+    .hero-line {
+      position: absolute;
+      top: 0; bottom: 0;
+      left: 58%;
+      width: 1px;
+      background: linear-gradient(to bottom, transparent, var(--gold) 30%, var(--gold) 70%, transparent);
+      opacity: 0.15;
+    }
+
+    .hero-tag {
+      font-size: 0.6rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 1s 0.3s forwards;
+    }
+
+    .hero h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(4rem, 10vw, 9rem);
+      font-weight: 300;
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+      max-width: 700px;
+      opacity: 0;
+      animation: fadeUp 1s 0.5s forwards;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      color: var(--gold-light);
+    }
+
+    .hero-sub {
+      margin-top: 2rem;
+      font-size: 0.7rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--grey-light);
+      opacity: 0;
+      animation: fadeUp 1s 0.8s forwards;
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 2.5rem;
+      right: 4rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.6rem;
+      opacity: 0;
+      animation: fadeUp 1s 1.2s forwards;
+    }
+    .scroll-hint span {
+      font-size: 0.55rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--grey-light);
+      writing-mode: vertical-rl;
+    }
+    .scroll-line {
+      width: 1px;
+      height: 60px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+      animation: scrollPulse 2s 2s infinite;
+    }
+
+    /* FILTER BAR */
+    .filter-section {
+      padding: 5rem 4rem 2rem;
+    }
+
+    .filter-bar {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 1px solid var(--grey);
+      padding-bottom: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .filter-btn {
+      background: none;
+      border: none;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 200;
+      font-size: 0.6rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--grey-light);
+      padding: 0.5rem 1.2rem;
+      cursor: none;
+      transition: color 0.3s;
+      position: relative;
+    }
+    .filter-btn.active { color: var(--gold-light); }
+    .filter-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1.5rem; left: 50%;
+      transform: translateX(-50%);
+      width: 4px; height: 4px;
+      background: var(--gold);
+      border-radius: 50%;
+    }
+    .filter-btn:hover { color: var(--white); }
+
+    /* GALLERY GRID */
+    .gallery {
+      padding: 0 4rem 6rem;
+      columns: 3;
+      column-gap: 1.2rem;
+    }
+
+    @media (max-width: 900px) {
+      .gallery { columns: 2; padding: 0 2rem 4rem; }
+      header { padding: 1.5rem 2rem; }
+      .hero { padding: 4rem 2rem; }
+      .filter-section { padding: 4rem 2rem 2rem; }
+    }
+    @media (max-width: 560px) {
+      .gallery { columns: 1; }
+      nav { gap: 1.2rem; }
+    }
+
+    .photo-item {
+      break-inside: avoid;
+      margin-bottom: 1.2rem;
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius);
+      cursor: none;
+    }
+
+    .photo-item img {
+      width: 100%;
+      display: block;
+      filter: grayscale(20%) brightness(0.88);
+      transition: transform 0.7s cubic-bezier(0.25,0.46,0.45,0.94),
+                  filter 0.5s ease;
+    }
+
+    .photo-item:hover img {
+      transform: scale(1.05);
+      filter: grayscale(0%) brightness(1);
+    }
+
+    .photo-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 50%);
+      opacity: 0;
+      transition: opacity 0.4s;
+      display: flex;
+      align-items: flex-end;
+      padding: 1.5rem;
+    }
+
+    .photo-item:hover .photo-overlay { opacity: 1; }
+
+    .photo-meta {
+      transform: translateY(8px);
+      transition: transform 0.4s;
+    }
+    .photo-item:hover .photo-meta { transform: translateY(0); }
+
+    .photo-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      font-weight: 300;
+      color: var(--white);
+      display: block;
+    }
+
+    .photo-cat {
+      font-size: 0.55rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-top: 0.25rem;
+      display: block;
+    }
+
+    /* HIDDEN state for filter */
+    .photo-item.hidden {
+      display: none;
+    }
+
+    /* LIGHTBOX */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(5,5,5,0.97);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s;
+    }
+    .lightbox.open { opacity: 1; pointer-events: all; }
+
+    .lightbox img {
+      max-width: 85vw;
+      max-height: 85vh;
+      object-fit: contain;
+      border-radius: var(--radius);
+      box-shadow: 0 0 80px rgba(0,0,0,0.8);
+    }
+
+    .lb-close {
+      position: absolute;
+      top: 2rem; right: 2rem;
+      background: none;
+      border: 1px solid var(--grey);
+      color: var(--grey-light);
+      font-size: 1.2rem;
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      cursor: none;
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color 0.3s, color 0.3s;
+    }
+    .lb-close:hover { border-color: var(--gold); color: var(--gold); }
+
+    .lb-info {
+      position: absolute;
+      bottom: 2.5rem; left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+    }
+    .lb-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.3rem;
+      color: var(--white);
+    }
+    .lb-cat {
+      font-size: 0.55rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-top: 0.3rem;
+    }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid #1e1e1e;
+      padding: 2.5rem 4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    footer p {
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      color: var(--grey);
+    }
+    footer .gold { color: var(--gold); }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.4; }
+      50%       { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- HEADER -->
+  <header>
+    <a href="#" class="logo">Luce<span>&</span>Ombra</a>
+    <nav>
+      <a href="#gallery">Galleria</a>
+      <a href="#">About</a>
+      <a href="#">Contatti</a>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-line"></div>
+    <p class="hero-tag">Portfolio Fotografico — 2025</p>
+    <h1>Ogni scatto<br>racconta una <em>storia</em></h1>
+    <p class="hero-sub">Paesaggi · Ritratti · Architettura · Street</p>
+    <div class="scroll-hint">
+      <span>Scorri</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section id="gallery" class="filter-section">
+    <div class="filter-bar">
+      <button class="filter-btn active" data-filter="all">Tutto</button>
+      <button class="filter-btn" data-filter="paesaggi">Paesaggi</button>
+      <button class="filter-btn" data-filter="ritratti">Ritratti</button>
+      <button class="filter-btn" data-filter="architettura">Architettura</button>
+      <button class="filter-btn" data-filter="street">Street</button>
+    </div>
+
+    <div class="gallery">
+
+      <!-- PAESAGGI -->
+      <div class="photo-item" data-cat="paesaggi" data-title="Alpi al tramonto">
+        <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80" alt="Alpi al tramonto" loading="lazy"/>
+        <div class="photo-overlay">
+          <div class="photo-meta">
+            <span class="photo-title">Alpi al tramonto</span>
+            <span class="photo-cat">Paesaggi</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="photo-item" data-cat="ritratti" data-title="Sguardo profondo">
+        <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=600&q=80" alt="Ritratto" loading="lazy"/>
+        <div class="photo-overlay">
+          <div class="photo-meta">
+            <span class="photo-title">Sguardo profondo</span>
+            <span class="photo-cat">Ritratti</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="photo-item" data-cat="architettura" data-title="Geometrie urbane">
+        <img src="https://images.unsplash.com/photo-1486325212027-8081e485255e?w=600&q=80" alt="Architettura" loading="lazy"/>
+        <div class="photo-overlay">
+          <div class="photo-meta">
+            <span class="photo-title">Geometrie urbane</span>
+            <span class="photo-cat">Architettura</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="photo-item" data-cat="street" data-title="Pioggia a Milano">
+        <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&q=80" alt="Street" loading="lazy"/>
+        <div class="photo-overlay">
+          <div class="photo-meta">
+            <span class="photo-title">Pioggia a Milano</span>
+            <span class="photo-cat">Street</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="photo-item" data-cat="paesaggi" data-title="Mare d'inverno">
+        <img src="https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=600&q=80" alt="Mare" loading="lazy"/>
+        <div class="photo-overlay">
+          <div class="photo-meta">
+            <span class="photo-title">Mare d'inverno</span>
+            <span class="photo-cat">Paesaggi</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="photo-item" data-cat="architettura" data-title="Luce e cemento">
+        <img src="https://images.unsplash.com/photo-1545558014-8692077e9b5c?w=600&q=80" alt="Architettura moderna" loading="lazy"/>
+        <div class="photo-overlay">
+          <div class="photo-meta">
+            <span class="photo-title">Luce e cemento</span>
+            <span class="photo-cat">Architettura</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="photo-item" data-cat="ritratti" data-title="Luce naturale">
+        <img src="https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=600&q=80" alt="Ritratto 2" loading="lazy"/>
+        <div class="photo-overlay">
+          <div class="photo-meta">
+            <span class="photo-title">Luce naturale</span>
+            <span class="photo-cat">Ritratti</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="photo-item" data-cat="street" data-title="Ombre sulla strada">
+        <img src="https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=600&q=80" alt="Street 2" loading="lazy"/>
+        <div class="photo-overlay">
+          <div class="photo-meta">
+            <span class="photo-title">Ombre sulla strada</span>
+            <span class="photo-cat">Street</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="photo-item" data-cat="paesaggi" data-title="Foresta nebbiosa">
+        <img src="https://images.unsplash.com/photo-1448375240586-882707db888b?w=600&q=80" alt="Foresta" loading="lazy"/>
+        <div class="photo-overlay">
+          <div class="photo-meta">
+            <span class="photo-title">Foresta nebbiosa</span>
+            <span class="photo-cat">Paesaggi</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="photo-item" data-cat="architettura" data-title="Volta gotica">
+        <img src="https://images.unsplash.com/photo-1554931670-4ebfabf6e7a9?w=600&q=80" alt="Gotico" loading="lazy"/>
+        <div class="photo-overlay">
+          <div class="photo-meta">
+            <span class="photo-title">Volta gotica</span>
+            <span class="photo-cat">Architettura</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="photo-item" data-cat="street" data-title="Neon notturno">
+        <img src="https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=600&q=80" alt="Neon" loading="lazy"/>
+        <div class="photo-overlay">
+          <div class="photo-meta">
+            <span class="photo-title">Neon notturno</span>
+            <span class="photo-cat">Street</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="photo-item" data-cat="ritratti" data-title="Silenzio">
+        <img src="https://images.unsplash.com/photo-1542736667-069246bdbc6d?w=600&q=80" alt="Ritratto 3" loading="lazy"/>
+        <div class="photo-overlay">
+          <div class="photo-meta">
+            <span class="photo-title">Silenzio</span>
+            <span class="photo-cat">Ritratti</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2025 <span class="gold">Luce&Ombra</span> — Tutti i diritti riservati</p>
+    <p>Fatto con <span class="gold">♥</span> e luce naturale</p>
+  </footer>
+
+  <!-- LIGHTBOX -->
+  <div class="lightbox" id="lightbox">
+    <button class="lb-close" id="lbClose">✕</button>
+    <img id="lbImg" src="" alt=""/>
+    <div class="lb-info">
+      <div class="lb-title" id="lbTitle"></div>
+      <div class="lb-cat" id="lbCat"></div>
+    </div>
+  </div>
+
+  <script>
+    // CURSOR
+    const cursor = document.getElementById('cursor');
+    const ring   = document.getElementById('cursorRing');
+    document.addEventListener('mousemove', e => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top  = e.clientY + 'px';
+      ring.style.left   = e.clientX + 'px';
+      ring.style.top    = e.clientY + 'px';
+    });
+    document.querySelectorAll('a, button, .photo-item').forEach(el => {
+      el.addEventListener('mouseenter', () => { cursor.classList.add('hover'); ring.classList.add('hover'); });
+      el.addEventListener('mouseleave', () => { cursor.classList.remove('hover'); ring.classList.remove('hover'); });
+    });
+
+    // FILTER
+    const btns  = document.querySelectorAll('.filter-btn');
+    const items = document.querySelectorAll('.photo-item');
+    btns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        btns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const f = btn.dataset.filter;
+        items.forEach(item => {
+          item.classList.toggle('hidden', f !== 'all' && item.dataset.cat !== f);
+        });
+      });
+    });
+
+    // LIGHTBOX
+    const lb      = document.getElementById('lightbox');
+    const lbImg   = document.getElementById('lbImg');
+    const lbTitle = document.getElementById('lbTitle');
+    const lbCat   = document.getElementById('lbCat');
+
+    items.forEach(item => {
+      item.addEventListener('click', () => {
+        lbImg.src      = item.querySelector('img').src.replace('w=600', 'w=1200');
+        lbTitle.textContent = item.dataset.title;
+        lbCat.textContent   = item.dataset.cat.charAt(0).toUpperCase() + item.dataset.cat.slice(1);
+        lb.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      });
+    });
+
+    document.getElementById('lbClose').addEventListener('click', () => {
+      lb.classList.remove('open');
+      document.body.style.overflow = '';
+    });
+    lb.addEventListener('click', e => {
+      if (e.target === lb) { lb.classList.remove('open'); document.body.style.overflow = ''; }
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') { lb.classList.remove('open'); document.body.style.overflow = ''; }
+    });
+  </script>
+</body>
+</html>
